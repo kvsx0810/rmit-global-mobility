@@ -974,9 +974,9 @@ function videoSlot(title,dur,href){
 function renderHome(){
   const saved=load(),back=saved&&saved.role,nm=acct.me&&acct.me.name?acct.me.name.split(' ')[0]:'',n=back?unread():0;
   const SL=[
-    {art:'Hero',slot:'Intro video · 2:30',video:true,
+    {art:'Hero',slot:'Key visual',
      h:back?'Welcome back'+(nm?', '+esc(nm):''):'Work permits, TRCs and leaving Vietnam',
-     p:back?(n?'You have '+n+' new update'+(n>1?'s':'')+'.':'Your plan is ready when you are.'):'Watch the 2-minute intro, then get a plan with your own dates.',
+     p:back?(n?'You have '+n+' new update'+(n>1?'s':'')+'.':'Your plan is ready when you are.'):'Get a plan with your own dates and documents.',
      cta:`<button class="btn lg" id="go">${back?'Open my plan':'Get my personal plan'}</button>`+(back?'<button class="ul" id="fresh">Start a new plan</button>':'<button class="ul" id="sample">Just looking? See a sample plan</button>')},
     {art:'TRC card',slot:'Key visual',h:'Renewing your work permit and TRC',p:'What happens, in what order, and when to send your documents.',cta:'<a class="btn" href="#renewal">Read more</a>'},
     {art:'Plane',slot:'Key visual',h:'Leaving RMIT Vietnam',p:'Exit visa, your flight home and who is eligible.',cta:'<a class="btn" href="#departure">Read more</a>'}];
@@ -1052,7 +1052,7 @@ function renderHub(key){
     const h=HUB[key];
     app.innerHTML=`<div class="view"><section class="band g overlap" style="background:linear-gradient(var(${h.bg}) 0 62%,var(--bg) 62%)"><div class="wrap hub-band center">
       <h1 class="d">${esc(h.title)}</h1>
-      ${h.video?videoSlot(h.video[0],h.video[1]):O(h.obj)}
+      ${O(h.obj)}
       <div class="hub-cards" style="text-align:left">${h.items.map(([t,p],k)=>`<div class="card"><span class="k">${k+1}</span><h3>${esc(t)}</h3><p>${esc(p)}</p></div>`).join('')}</div>
     </div></section>
     <section class="g"><div class="wrap"><div class="panel center"><h2 class="d">Get your own dates</h2><p class="sub">The planner turns this guide into a timeline for you.</p>

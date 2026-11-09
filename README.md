@@ -6,7 +6,7 @@ A concept website for international staff at RMIT University Vietnam. It explain
 
 ## What's in the prototype
 
-- **Home:** intro video slot (the 2–3 minute animation), links to the Renewal and Departure guides, and the no-travel rule.
+- **Home:** full-width banner with key visuals, links to the Renewal and Departure guides, and the no-travel rule.
 - **Personal plan:** a short set of questions builds a step-by-step timeline with dates, documents and the no-travel window.
 - **My account hub:** My plan, Documents (upload and submit), Updates (reminders), Profile & settings.
 - **Calendar:** add any step to Outlook or Google Calendar.
