@@ -497,6 +497,48 @@ body.personal .dcard.up{border-color:#000054;box-shadow:0 0 0 2px #000054}
 body.personal .navrow .btn.back{background:#fff;color:#000054}
 body.personal .calall{border-color:#e60028}
 
+/* Home hero: full-width banner carousel (RMIT style) */
+.hero-band{position:relative;background:#000054;color:#fff;overflow:hidden}
+.hslide{display:none;position:relative;min-height:clamp(440px,64vh,620px)}
+.hslide.on{display:block;animation:enter .6s var(--ease) both}
+.hbg{position:absolute;inset:0;background:radial-gradient(120% 120% at 75% 30%,#1a1a8c 0%,#000054 45%,#01012f 100%)}
+.hmedia{position:absolute;right:4%;top:8%;bottom:8%;width:min(56%,720px);display:grid;place-items:center}
+.hmedia svg{width:100%;height:auto;max-height:100%}
+.hplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:88px;height:88px;border-radius:50%;background:#e60028;border:0;display:grid;place-items:center;cursor:pointer;box-shadow:0 12px 40px rgba(0,0,0,.45);transition:transform .3s var(--ease)}
+.hplay:hover{transform:translate(-50%,-50%) scale(1.07)}
+.hplay svg{width:34px;height:34px;fill:#fff;margin-left:5px}
+.hslot{position:absolute;top:18px;right:max(16px,4%);font-size:12px;font-weight:700;letter-spacing:.06em;background:rgba(255,255,255,.12);border-radius:6px;padding:4px 10px}
+.hcap{position:absolute;left:0;right:0;bottom:clamp(28px,7vh,64px)}
+.hcap{pointer-events:none}.hbox{pointer-events:auto}
+.hcap-in{max-width:var(--wrap);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hbox{background:rgba(1,1,47,.74);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);padding:clamp(20px,3vw,32px);max-width:620px;display:grid;gap:14px;justify-items:start}
+.hbox .dash{width:32px;height:3px;background:#e60028}
+.hbox h1,.hbox h2{font-family:var(--display);color:#fff;font-size:clamp(28px,3.8vw,46px);line-height:1.12;margin:0}
+.hbox p{margin:0;font-size:17px;opacity:.85}
+.hbox .row{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
+.hbox .ul{color:#fff}
+.harrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;background:none;border:0;cursor:pointer;padding:12px;color:#fff}
+.harrow svg{width:38px;height:38px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.harrow.prev{left:max(4px,1%)}.harrow.next{right:max(4px,1%)}
+.hdots{display:flex;justify-content:center;gap:10px;padding:16px 0 0}
+.hdots button{width:11px;height:11px;border-radius:50%;border:1px solid var(--muted);background:transparent;padding:0;cursor:pointer}
+.hdots button[aria-current]{background:var(--head);border-color:var(--head)}
+.lookfor{text-align:center;display:grid;gap:22px;padding-block:28px 8px}
+.lookfor h2{font-size:clamp(26px,3.4vw,36px)}
+.pills{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.pills a{border:1.5px solid var(--head);color:var(--head);border-radius:999px;padding:10px 26px;font-weight:600;text-decoration:none;font-size:16px;transition:background .2s,color .2s}
+.pills a:hover{background:var(--head);color:#fff}
+@media (max-width:760px){
+  .hslide.on{display:flex;flex-direction:column}
+  .hslide{min-height:0}
+  .hmedia{position:relative;inset:auto;width:100%;height:230px;padding:20px 16px 0}
+  .hcap{position:relative;bottom:auto}
+  .hbox{max-width:none;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;padding:18px 0 30px}
+  .harrow{display:none}
+  .hslot{right:auto;left:16px}
+}
+@media (prefers-reduced-motion:reduce){.hslide.on{animation:none}}
+
 /* Hub */
 .hub-band{padding-block:48px 0;display:grid;gap:18px}
 .hub-band h1{font-size:clamp(32px,5vw,52px)}
@@ -931,28 +973,43 @@ function videoSlot(title,dur,href){
 }
 function renderHome(){
   const saved=load(),back=saved&&saved.role,nm=acct.me&&acct.me.name?acct.me.name.split(' ')[0]:'',n=back?unread():0;
-  const card=(href,obj,t,sub)=>`<a class="xcard" href="${href}">${O(obj)}<b>${t}</b><span class="s">${sub}</span><span class="more">Read more →</span></a>`;
+  const SL=[
+    {art:'Hero',slot:'Intro video · 2:30',video:true,
+     h:back?'Welcome back'+(nm?', '+esc(nm):''):'Work permits, TRCs and leaving Vietnam',
+     p:back?(n?'You have '+n+' new update'+(n>1?'s':'')+'.':'Your plan is ready when you are.'):'Watch the 2-minute intro, then get a plan with your own dates.',
+     cta:`<button class="btn lg" id="go">${back?'Open my plan':'Get my personal plan'}</button>`+(back?'<button class="ul" id="fresh">Start a new plan</button>':'<button class="ul" id="sample">Just looking? See a sample plan</button>')},
+    {art:'TRC card',slot:'Key visual',h:'Renewing your work permit and TRC',p:'What happens, in what order, and when to send your documents.',cta:'<a class="btn" href="#renewal">Read more</a>'},
+    {art:'Plane',slot:'Key visual',h:'Leaving RMIT Vietnam',p:'Exit visa, your flight home and who is eligible.',cta:'<a class="btn" href="#departure">Read more</a>'}];
+  const cur=Math.min(state.slide||0,SL.length-1);
+  const arrow=d=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
   app.innerHTML=`<div class="view">
-  <section class="g"><div class="wrap home-hero">
-    <div class="hh-text">
-      <h1 class="d">${back?'Welcome back'+(nm?', '+esc(nm):''):'Work permits, TRCs and leaving Vietnam'}</h1>
-      <p class="lead">${back?(n?'You have '+n+' new update'+(n>1?'s':'')+'.':'Your plan is ready when you are.'):'Your dates, your documents, one plan.'}</p>
-      <div class="home-ctas">
-        <button class="bigbtn" id="go">${back?'Open my plan':'Get my personal plan'}<i aria-hidden="true">→</i></button>
-        ${back?'<button class="ul" id="fresh">Start a new plan</button>':'<button class="ul" id="sample">Just looking? See a sample plan</button>'}
-      </div>
-    </div>
-    <div class="hh-video">${videoSlot('Global Mobility in 2 minutes','2:30')}</div>
-  </div></section>
+  <section class="hero-band" aria-roledescription="carousel" aria-label="Highlights">
+    ${SL.map((x,i)=>`<div class="hslide ${i===cur?'on':''}" role="group" aria-roledescription="slide" aria-label="${i+1} of ${SL.length}">
+      <div class="hbg"></div>
+      <div class="hmedia">${ill(x.art)}${x.video?'<button class="hplay" data-video aria-label="Play the intro video"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>':''}</div>
+      <span class="hslot">${x.slot}</span>
+      <div class="hcap"><div class="hcap-in"><div class="hbox"><span class="dash"></span>
+        ${i===0?`<h1>${x.h}</h1>`:`<h2>${x.h}</h2>`}<p>${x.p}</p><div class="row">${x.cta}</div></div></div></div>
+    </div>`).join('')}
+    <button class="harrow prev" aria-label="Previous slide">${arrow('M15 5l-7 7 7 7')}</button>
+    <button class="harrow next" aria-label="Next slide">${arrow('M9 5l7 7-7 7')}</button>
+  </section>
+  <div class="hdots" role="tablist" aria-label="Choose slide">${SL.map((x,i)=>`<button aria-label="Slide ${i+1}" ${i===cur?'aria-current="true"':''} data-sl="${i}"></button>`).join('')}</div>
 
   <section class="g" id="essentials"><div class="wrap ess">
-    <div class="paths">
-      <a class="path" href="#renewal">${O('TRC card')}<b>Renewing your work permit and TRC</b><span class="go">Full details →</span></a>
-      <a class="path" href="#departure">${O('Plane')}<b>Leaving RMIT Vietnam</b><span class="go">Full details →</span></a>
+    <div class="lookfor">
+      <h2 class="d">What are you looking for?</h2>
+      <div class="pills"><a href="#renewal">Renewal</a><a href="#departure">Leaving Vietnam</a><a href="#documents">My documents</a><a href="#faq">FAQ</a></div>
     </div>
     <a class="ruleline" href="#faq"><span>No travel while your passport is with Immigration</span><span>Why →</span></a>
-    <div class="homefoot"><a class="ul" href="#faq">FAQ</a><span>Email Global Mobility: <b>[GM email — to confirm]</b></span></div>
+    <div class="homefoot"><span>Email Global Mobility: <b>[GM email — to confirm]</b></span></div>
   </div></section></div>`;
+  const show=i=>{const c=(i+SL.length)%SL.length;state.slide=c;
+    app.querySelectorAll('.hslide').forEach((el,k)=>el.classList.toggle('on',k===c));
+    app.querySelectorAll('.hdots button').forEach((d,k)=>d.toggleAttribute('aria-current',k===c))};
+  app.querySelector('.harrow.prev').onclick=()=>show((state.slide||0)-1);
+  app.querySelector('.harrow.next').onclick=()=>show((state.slide||0)+1);
+  app.querySelectorAll('[data-sl]').forEach(d=>d.onclick=()=>show(+d.dataset.sl));
   document.getElementById('go').onclick=()=>{if(back){state.answers=saved;state.step=0;location.hash='plan'}else startQuiz()};
   const f=document.getElementById('fresh');if(f)f.onclick=startQuiz;
   const sm=document.getElementById('sample');if(sm)sm.onclick=()=>openSample('renew');
@@ -1339,7 +1396,7 @@ document.getElementById('bell').onclick=openDrawer;
 function myPlanClick(e){e.preventDefault();if(currentPlan()){state.step=0;if(location.hash==='#plan')route();else location.hash='plan'}else startQuiz()}
 document.querySelectorAll('[data-myplan]').forEach(b=>b.onclick=myPlanClick);
 document.getElementById('menuBtn').onclick=()=>{const n=document.querySelector('nav.top'),o=n.classList.toggle('open');document.getElementById('menuBtn').setAttribute('aria-expanded',o)};
-document.addEventListener('click',e=>{const v=e.target.closest('[data-video]');if(v){const n=v.parentElement.querySelector('.vnote');if(n)n.textContent='The animated video will play here once it is produced.'}});
+document.addEventListener('click',e=>{const v=e.target.closest('[data-video]');if(v){const n=v.parentElement.querySelector('.vnote');if(n)n.textContent='The animated video will play here once it is produced.';else toast('The intro animation will play here once it is produced.')}});
 route();
 initAccount();
 chatInit();
