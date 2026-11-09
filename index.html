@@ -1002,19 +1002,16 @@ function renderHome(){
      cta:`<button class="btn lg" id="go">${back?'Open my plan':'Get my personal plan'}</button>`+(back?'<button class="ul" id="fresh">Start a new plan</button>':'<button class="ul" id="sample">Just looking? See a sample plan</button>')},
     {img:'img/renewal.png',alt:'A staff member at her laptop getting a renewal reminder',h:'Renewing your work permit and TRC',p:'What happens, in what order, and when to send your documents.',cta:'<a class="btn" href="#renewal">Read more</a>'},
     {img:'img/departure.png',alt:'A staff member packing a suitcase, with the flight date circled on the calendar',h:'Leaving RMIT Vietnam',p:'Exit visa, your flight home and who is eligible.',cta:'<a class="btn" href="#departure">Read more</a>'}];
-  const cur=Math.min(state.slide||0,SL.length-1);
+  SL.length=1;const cur=0;
   const arrow=d=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
   app.innerHTML=`<div class="view">
-  <section class="hero-band" aria-roledescription="carousel" aria-label="Highlights">
+  <section class="hero-band" aria-label="Welcome">
     ${SL.map((x,i)=>`<div class="hslide ${x.stack?'stack':''} ${i===cur?'on':''}" role="group" aria-roledescription="slide" aria-label="${i+1} of ${SL.length}">
       <div class="hmedia"><img src="${x.img}" alt="${esc(x.alt)}"></div>
       <div class="hcap"><div class="hcap-in"><div class="hbox"><span class="dash"></span>
         ${i===0?`<h1>${x.h}</h1>`:`<h2>${x.h}</h2>`}<p>${x.p}</p><div class="row">${x.cta}</div></div></div></div>
     </div>`).join('')}
-    <button class="harrow prev" aria-label="Previous slide">${arrow('M15 5l-7 7 7 7')}</button>
-    <button class="harrow next" aria-label="Next slide">${arrow('M9 5l7 7-7 7')}</button>
   </section>
-  <div class="hdots" role="tablist" aria-label="Choose slide">${SL.map((x,i)=>`<button aria-label="Slide ${i+1}" ${i===cur?'aria-current="true"':''} data-sl="${i}"></button>`).join('')}</div>
 
   <section class="g" id="essentials"><div class="wrap ess">
     <div class="lookfor">
@@ -1027,9 +1024,6 @@ function renderHome(){
   const show=i=>{const c=(i+SL.length)%SL.length;state.slide=c;
     app.querySelectorAll('.hslide').forEach((el,k)=>el.classList.toggle('on',k===c));
     app.querySelectorAll('.hdots button').forEach((d,k)=>d.toggleAttribute('aria-current',k===c))};
-  app.querySelector('.harrow.prev').onclick=()=>show((state.slide||0)-1);
-  app.querySelector('.harrow.next').onclick=()=>show((state.slide||0)+1);
-  app.querySelectorAll('[data-sl]').forEach(d=>d.onclick=()=>show(+d.dataset.sl));
   document.getElementById('go').onclick=()=>{if(back){state.answers=saved;state.step=0;location.hash='plan'}else startQuiz()};
   const f=document.getElementById('fresh');if(f)f.onclick=startQuiz;
   const sm=document.getElementById('sample');if(sm)sm.onclick=()=>openSample('renew');
