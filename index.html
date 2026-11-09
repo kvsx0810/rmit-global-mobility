@@ -539,6 +539,28 @@ body.personal .calall{border-color:#e60028}
 }
 @media (prefers-reduced-motion:reduce){.hslide.on{animation:none}}
 
+/* Hero with hand-drawn illustrations: light background */
+.hero-band{background:#fff;color:var(--ink);border-bottom:1px solid var(--line)}
+.hmedia img{width:100%;height:100%;object-fit:contain;display:block}
+.harrow{color:#000054}
+.hslide.stack{min-height:0}
+.hslide.stack.on{display:flex;flex-direction:column}
+.hslide.stack .hcap{position:relative;bottom:auto;padding-top:clamp(28px,5vw,56px)}
+.hslide.stack .hbox{background:none;-webkit-backdrop-filter:none;backdrop-filter:none;padding:0;max-width:760px}
+.hslide.stack .hbox h1{color:#000054}
+.hslide.stack .hbox p{color:var(--muted);opacity:1}
+.hslide.stack .hbox .ul{color:#000054}
+.hslide.stack .hmedia{position:relative;inset:auto;width:100%;height:auto;padding:0;margin-top:clamp(8px,2vw,20px);display:block}
+.hslide.stack .hmedia img{height:auto}
+.hubimg{display:block;width:min(760px,100%);height:auto;margin:8px auto 0}
+@media (min-width:761px){.hslide:not(.stack) .hmedia{right:2%;width:52%}.hslide:not(.stack) .hbox{background:#000054;color:#fff;-webkit-backdrop-filter:none;backdrop-filter:none}.hslide:not(.stack) .hbox p{color:#fff;opacity:.85}}
+@media (max-width:760px){
+  .hbox h1,.hbox h2{color:#000054}
+  .hbox p{color:var(--muted);opacity:1}
+  .hbox .ul{color:#000054}
+  .hslide.stack .hmedia{padding:0}
+}
+
 /* Hub */
 .hub-band{padding-block:48px 0;display:grid;gap:18px}
 .hub-band h1{font-size:clamp(32px,5vw,52px)}
@@ -974,20 +996,18 @@ function videoSlot(title,dur,href){
 function renderHome(){
   const saved=load(),back=saved&&saved.role,nm=acct.me&&acct.me.name?acct.me.name.split(' ')[0]:'',n=back?unread():0;
   const SL=[
-    {art:'Hero',slot:'Key visual',
+    {img:'img/hero-landscape.png',alt:'A staff member shaking hands, with a passport, TRC card and plane',stack:true,
      h:back?'Welcome back'+(nm?', '+esc(nm):''):'Work permits, TRCs and leaving Vietnam',
      p:back?(n?'You have '+n+' new update'+(n>1?'s':'')+'.':'Your plan is ready when you are.'):'Get a plan with your own dates and documents.',
      cta:`<button class="btn lg" id="go">${back?'Open my plan':'Get my personal plan'}</button>`+(back?'<button class="ul" id="fresh">Start a new plan</button>':'<button class="ul" id="sample">Just looking? See a sample plan</button>')},
-    {art:'TRC card',slot:'Key visual',h:'Renewing your work permit and TRC',p:'What happens, in what order, and when to send your documents.',cta:'<a class="btn" href="#renewal">Read more</a>'},
-    {art:'Plane',slot:'Key visual',h:'Leaving RMIT Vietnam',p:'Exit visa, your flight home and who is eligible.',cta:'<a class="btn" href="#departure">Read more</a>'}];
+    {img:'img/renewal.png',alt:'A staff member at her laptop getting a renewal reminder',h:'Renewing your work permit and TRC',p:'What happens, in what order, and when to send your documents.',cta:'<a class="btn" href="#renewal">Read more</a>'},
+    {img:'img/departure.png',alt:'A staff member packing a suitcase, with the flight date circled on the calendar',h:'Leaving RMIT Vietnam',p:'Exit visa, your flight home and who is eligible.',cta:'<a class="btn" href="#departure">Read more</a>'}];
   const cur=Math.min(state.slide||0,SL.length-1);
   const arrow=d=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
   app.innerHTML=`<div class="view">
   <section class="hero-band" aria-roledescription="carousel" aria-label="Highlights">
-    ${SL.map((x,i)=>`<div class="hslide ${i===cur?'on':''}" role="group" aria-roledescription="slide" aria-label="${i+1} of ${SL.length}">
-      <div class="hbg"></div>
-      <div class="hmedia">${ill(x.art)}${x.video?'<button class="hplay" data-video aria-label="Play the intro video"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>':''}</div>
-      <span class="hslot">${x.slot}</span>
+    ${SL.map((x,i)=>`<div class="hslide ${x.stack?'stack':''} ${i===cur?'on':''}" role="group" aria-roledescription="slide" aria-label="${i+1} of ${SL.length}">
+      <div class="hmedia"><img src="${x.img}" alt="${esc(x.alt)}"></div>
       <div class="hcap"><div class="hcap-in"><div class="hbox"><span class="dash"></span>
         ${i===0?`<h1>${x.h}</h1>`:`<h2>${x.h}</h2>`}<p>${x.p}</p><div class="row">${x.cta}</div></div></div></div>
     </div>`).join('')}
@@ -1017,12 +1037,12 @@ function renderHome(){
 
 /* ---------- Hub ---------- */
 const HUB={
-  renewal:{video:['Renewing your work permit and TRC','1:00'],title:'Work permit & TRC renewal',obj:'TRC card',bg:'--band',items:[
+  renewal:{img:'img/renewal.png',video:['Renewing your work permit and TRC','1:00'],title:'Work permit & TRC renewal',obj:'TRC card',bg:'--band',items:[
     ['Starts early','Renewal begins about three months before expiry. Global Mobility emails you when it is time.'],
     ['Work permit first','The work permit is renewed before the TRC. Each needs its own documents.'],
     ['We file it for you','Global Mobility prepares and submits both applications, online and in person.'],
     ['No travel in the TRC window','Your passport is with Immigration. Tell Global Mobility about trips before anything starts.']]},
-  departure:{video:['Leaving RMIT Vietnam','1:00'],title:'Leaving RMIT Vietnam',obj:'Plane',bg:'--band',items:[
+  departure:{img:'img/departure.png',video:['Leaving RMIT Vietnam','1:00'],title:'Leaving RMIT Vietnam',obj:'Plane',bg:'--band',items:[
     ['Check eligibility','Fixed-term staff whose contract ends, or who resign after 12 months or more.'],
     ['We book the flight','One-way economy to your country of domicile, through RMIT\'s travel vendor only.'],
     ['Exit visa','Global Mobility prepares and submits it. Processing takes time, so plan ahead.'],
@@ -1052,7 +1072,7 @@ function renderHub(key){
     const h=HUB[key];
     app.innerHTML=`<div class="view"><section class="band g overlap" style="background:linear-gradient(var(${h.bg}) 0 62%,var(--bg) 62%)"><div class="wrap hub-band center">
       <h1 class="d">${esc(h.title)}</h1>
-      ${O(h.obj)}
+      ${h.img?`<img class="hubimg" src="${h.img}" alt="">`:O(h.obj)}
       <div class="hub-cards" style="text-align:left">${h.items.map(([t,p],k)=>`<div class="card"><span class="k">${k+1}</span><h3>${esc(t)}</h3><p>${esc(p)}</p></div>`).join('')}</div>
     </div></section>
     <section class="g"><div class="wrap"><div class="panel center"><h2 class="d">Get your own dates</h2><p class="sub">The planner turns this guide into a timeline for you.</p>
